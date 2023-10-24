@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:green_flux_assessment/features/charge_locations/application/widgets/charging_point_card.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 
 class ChargeLocationDetails extends StatefulWidget {
@@ -168,34 +169,6 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class ChargingPointCard extends StatelessWidget {
-  const ChargingPointCard({
-    super.key,
-    required this.colorScheme,
-  });
-
-  final ColorScheme colorScheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: colorScheme.secondaryContainer,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.ev_station_rounded),
-            Text('Status: Available'),
-            Text('Power type: DC'),
-            Text('Connection type: IEC_62196_T1_COMBO'),
-          ],
         ),
       ),
     );
