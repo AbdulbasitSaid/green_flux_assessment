@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:green_flux_assessment/shared/theme/theme.dart';
 
 class ChargeLocations extends StatefulWidget {
@@ -9,13 +10,14 @@ class ChargeLocations extends StatefulWidget {
 }
 
 class _ChargeLocationsState extends State<ChargeLocations> {
-  LocationListViewType locationListViewType = LocationListViewType.lightMode;
+  late LocationListViewType locationListViewType;
 
   @override
   Widget build(BuildContext context) {
     late final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
+    locationListViewType =
+        isDark ? LocationListViewType.darkMode : LocationListViewType.lightMode;
     return Scaffold(
       backgroundColor: colorScheme.background.withAlpha(200),
       body: SafeArea(
@@ -156,7 +158,9 @@ class ChargeLocationListCard extends StatelessWidget {
                   ],
                 ),
                 FilledButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go('/locations/1');
+                  },
                   child: const Text('View Details'),
                 ),
               ],

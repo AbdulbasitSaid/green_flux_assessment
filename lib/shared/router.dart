@@ -28,7 +28,7 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           name: 'location',
-          path: 'locations/:aid',
+          path: ':aid',
           builder: (context, state) => ChargeLocationDetails(
             locationId: state.pathParameters['aid']!,
           ),
