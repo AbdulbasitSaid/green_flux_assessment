@@ -1,16 +1,17 @@
 name: green_flux_assessment
 description: A new Flutter project.
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: '>=3.1.4 <4.0.0'
+  sdk: ">=3.1.4 <4.0.0"
 
 dependencies:
   dynamic_color: ^1.6.8
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.3
+  go_router: ^12.0.0
 
 dev_dependencies:
   flutter_test:
