@@ -16,7 +16,6 @@ class Location extends Equatable {
     required this.longitude,
     this.evses = const [],
   });
-  static bool get getStatus => false;
 
   List<Evses> get availableEvses =>
       evses.where((element) => element.status == "AVAILABLE").toList();

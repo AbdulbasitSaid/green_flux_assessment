@@ -6,7 +6,7 @@ void main() {
     final evsesList = [
       const Evses(
           evseId: '123',
-          status: 'available',
+          status: 'AVAILABLE',
           connectorType: 'Type2',
           powerType: 'AC'),
     ];
@@ -68,7 +68,7 @@ void main() {
         'evses': [
           {
             'evseId': '123',
-            'status': 'available',
+            'status': 'AVAILABLE',
             'connectorType': 'Type2',
             'powerType': 'AC'
           }
@@ -76,6 +76,133 @@ void main() {
       };
 
       expect(Location.fromJson(json), location1);
+    });
+
+    test(
+        'should return false if 50% or less of the EVSEs of a charge location are available',
+        () {
+      final json = {
+        'address': '123 Main St',
+        'city': 'Springfield',
+        'country': 'USA',
+        'latitude': 37.7749,
+        'longitude': -122.4194,
+        'evses': [
+          {
+            'evseId': '123',
+            'status': 'available',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '124',
+            'status': 'unavailable',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '125',
+            'status': 'unavailable',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '126',
+            'status': 'available',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          }
+        ],
+      };
+
+      expect(Location.fromJson(json).availability, false);
+    });
+    test(
+        'should return true if greater than 50% of the EVSEs of a charge location are available',
+        () {
+      final json = {
+        'address': '123 Main St',
+        'city': 'Springfield',
+        'country': 'USA',
+        'latitude': 37.7749,
+        'longitude': -122.4194,
+        'evses': [
+          {
+            'evseId': '123',
+            'status': 'AVAILABLE',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '124',
+            'status': 'AVAILABLE',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '125',
+            'status': 'unavailable',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '126',
+            'status': 'AVAILABLE',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          }
+        ],
+      };
+
+      expect(Location.fromJson(json).availability, true);
+    });
+    test('should return List of available Evses', () {
+      final json = {
+        'address': '123 Main St',
+        'city': 'Springfield',
+        'country': 'USA',
+        'latitude': 37.7749,
+        'longitude': -122.4194,
+        'evses': [
+          {
+            'evseId': '123',
+            'status': 'AVAILABLE',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '124',
+            'status': 'charging',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '125',
+            'status': 'unavailable',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          },
+          {
+            'evseId': '126',
+            'status': 'AVAILABLE',
+            'connectorType': 'Type2',
+            'powerType': 'AC'
+          }
+        ],
+      };
+
+      expect(Location.fromJson(json).availableEvses, [
+        const Evses(
+            evseId: '123',
+            status: 'AVAILABLE',
+            connectorType: 'Type2',
+            powerType: 'AC'),
+        const Evses(
+            evseId: '126',
+            status: 'AVAILABLE',
+            connectorType: 'Type2',
+            powerType: 'AC'),
+      ]);
     });
   });
 }
