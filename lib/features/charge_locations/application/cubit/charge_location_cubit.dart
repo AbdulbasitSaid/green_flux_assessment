@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:go_router/go_router.dart';
 import 'package:green_flux_assessment/features/charge_locations/data/locations_api.dart';
 import 'package:green_flux_assessment/features/charge_locations/domain/locations_repository.dart';
 

@@ -138,11 +138,18 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.pin_drop),
-                            Text("Address: ${location.address}"),
-                          ],
+                        Flexible(
+                          child: Row(
+                            children: [
+                              const Icon(Icons.pin_drop),
+                              Expanded(
+                                child: Text(
+                                  "Address: ${location.address}",
+                                  overflow: TextOverflow.clip,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         TextButton.icon(
                             onPressed: () {

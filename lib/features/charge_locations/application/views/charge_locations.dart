@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:green_flux_assessment/features/charge_locations/application/cubit/charge_location_cubit.dart';
-import 'package:green_flux_assessment/features/charge_locations/application/widgets/charge_location_card.dart';
+import 'package:green_flux_assessment/features/charge_locations/application/widgets/charge_location_list_card.dart';
 import 'package:green_flux_assessment/shared/theme/theme.dart';
 
 class ChargeLocations extends StatefulWidget {
