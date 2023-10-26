@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:green_flux_assessment/features/charge_locations/application/cubit/charge_location_cubit.dart';
 import 'package:green_flux_assessment/features/charge_locations/application/widgets/charge_location_card.dart';
 import 'package:green_flux_assessment/shared/theme/theme.dart';
 
@@ -11,6 +14,20 @@ class ChargeLocations extends StatefulWidget {
 
 class _ChargeLocationsState extends State<ChargeLocations> {
   late LocationListViewType locationListViewType;
+  @override
+  void initState() {
+    _searchController = TextEditingController();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  late final TextEditingController _searchController;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +35,7 @@ class _ChargeLocationsState extends State<ChargeLocations> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     locationListViewType =
         isDark ? LocationListViewType.darkMode : LocationListViewType.lightMode;
+    final chargeLocationsState = context.watch<ChargeLocationCubit>().state;
     return Scaffold(
       backgroundColor: colorScheme.background.withAlpha(200),
       body: SafeArea(
@@ -26,27 +44,56 @@ class _ChargeLocationsState extends State<ChargeLocations> {
           child: Column(
             children: [
               const SizedBox(height: 8),
-              const SearchBar(
-                leading: Icon(Icons.search),
-                trailing: [Icon(Icons.close)],
+              SearchBar(
+                controller: _searchController,
+                leading: const Icon(Icons.search),
+                trailing: [
+                  IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                      icon: const Icon(Icons.close))
+                ],
                 hintText: "search charge locations",
+                onChanged: (value) => context
+                    .read<ChargeLocationCubit>()
+                    .searchLocation(query: _searchController.text),
+              ),
+              const SizedBox(
+                height: 8,
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: ListView(
-                  children: [
-                    ChargeLocationListCard(colorScheme: colorScheme),
-                    const SizedBox(height: 8),
-                    ChargeLocationListCard(colorScheme: colorScheme),
-                    const SizedBox(height: 8),
-                    ChargeLocationListCard(colorScheme: colorScheme),
-                    const SizedBox(height: 8),
-                    ChargeLocationListCard(colorScheme: colorScheme),
-                    const SizedBox(height: 8),
-                    ChargeLocationListCard(colorScheme: colorScheme),
-                  ],
-                ),
-              ),
+                  child: chargeLocationsState.maybeWhen(
+                      initial: () =>
+                          const Text('Search city to get charge locations'),
+                      loading: () => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                      loaded: (locations) => locations.isEmpty
+                          ? const Center(
+                              child: Text('No charge location found'),
+                            )
+                          : ListView.separated(
+                              itemBuilder: (BuildContext context, int index) {
+                                return ChargeLocationListCard(
+                                    location: locations[index],
+                                    colorScheme: colorScheme);
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return const SizedBox(
+                                  height: 8,
+                                );
+                              },
+                              itemCount: locations.length,
+                            ),
+                      failed: (errorMessage) => Center(
+                            child: Text(errorMessage),
+                          ),
+                      orElse: () => const Center(
+                            child: Text("Error while loading"),
+                          ))),
             ],
           ),
         ),

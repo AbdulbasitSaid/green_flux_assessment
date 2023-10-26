@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:green_flux_assessment/features/charge_locations/application/views/charge_location_details.dart';
 import 'package:green_flux_assessment/features/charge_locations/application/views/charge_locations.dart';
+import 'package:green_flux_assessment/features/charge_locations/data/models/location.dart';
 
 class NavigationDestination {
   const NavigationDestination({
@@ -24,14 +26,19 @@ final appRouter = GoRouter(
     GoRoute(
       name: 'locations',
       path: '/locations',
-      builder: (context, state) => const ChargeLocations(),
+      builder: (context, state) {
+        return const ChargeLocations();
+      },
       routes: [
         GoRoute(
           name: 'location',
           path: ':aid',
-          builder: (context, state) => ChargeLocationDetails(
-            locationId: state.pathParameters['aid']!,
-          ),
+          builder: (context, state) {
+            final locationDetail = state.extra as Location;
+            return ChargeLocationDetails(
+              location: locationDetail,
+            );
+          },
         ),
       ],
     ),

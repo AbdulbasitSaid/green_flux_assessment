@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:green_flux_assessment/features/charge_locations/application/widgets/charging_point_card.dart';
+import 'package:green_flux_assessment/features/charge_locations/data/models/location.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 
 class ChargeLocationDetails extends StatefulWidget {
-  const ChargeLocationDetails({super.key, required this.locationId});
-  final String locationId;
+  const ChargeLocationDetails({super.key, required this.location});
+  final Location location;
 
   @override
   State<ChargeLocationDetails> createState() => _ChargeLocationDetailsState();
@@ -15,12 +17,6 @@ class ChargeLocationDetails extends StatefulWidget {
 
 class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
   late final Completer<GoogleMapController> _mapController;
-
-  static const CameraPosition _chargeLocation = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(19.06593, -98.13851),
-      tilt: 59.440717697143555,
-      zoom: 15);
 
   @override
   void initState() {
@@ -36,7 +32,13 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
   @override
   Widget build(BuildContext context) {
     late final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final location = widget.location;
 
+    CameraPosition chargeLocation = CameraPosition(
+        bearing: 192.8334901395799,
+        target: LatLng(location.latitude ?? 00, location.longitude ?? 00),
+        tilt: 59.440717697143555,
+        zoom: 15);
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -45,11 +47,11 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Charge points at: Address710 486 ',
-                  style: TextStyle(
+                  'Charge points at: ${location.address} ',
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w500,
                   ),
@@ -62,13 +64,13 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
               Container(
                 height: 140,
                 padding: const EdgeInsets.only(left: 16),
-                child: ListView(
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  children: [
-                    ChargingPointCard(colorScheme: colorScheme),
-                    ChargingPointCard(colorScheme: colorScheme),
-                    ChargingPointCard(colorScheme: colorScheme),
-                  ],
+                  itemBuilder: ((context, index) => ChargingPointCard(
+                        colorScheme: colorScheme,
+                        evses: location.evses[index],
+                      )),
+                  itemCount: location.evses.length,
                 ),
               ),
               const SizedBox(
@@ -86,7 +88,7 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
                     GoogleMap(
                       mapType: MapType.normal,
                       myLocationButtonEnabled: false,
-                      initialCameraPosition: _chargeLocation,
+                      initialCameraPosition: chargeLocation,
                       zoomControlsEnabled: false,
                       onMapCreated: (GoogleMapController controller) {
                         _mapController.complete(controller);
@@ -99,7 +101,9 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
                           onPressed: () async {
                             try {
                               await MapsLauncher.launchCoordinates(
-                                  37.4220041, -122.0862462, "Address here");
+                                  location.latitude ?? 00,
+                                  location.longitude ?? 00,
+                                  "${location.address}");
                             } catch (e) {
                               return;
                             }
@@ -134,14 +138,17 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.pin_drop),
-                            Text("Address: Address710 486"),
+                            const Icon(Icons.pin_drop),
+                            Text("Address: ${location.address}"),
                           ],
                         ),
                         TextButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: location.address ?? ''));
+                            },
                             icon: const Icon(Icons.copy),
                             label: const Text('Copy')),
                       ],
@@ -149,19 +156,19 @@ class _ChargeLocationDetailsState extends State<ChargeLocationDetails> {
                     const SizedBox(
                       height: 8,
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.location_city_outlined),
-                        Text("City: Amsterdam"),
+                        const Icon(Icons.location_city_outlined),
+                        Text("City: ${location.city}"),
                       ],
                     ),
                     const SizedBox(
                       height: 8,
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.flag),
-                        Text("Country Code: NLD"),
+                        const Icon(Icons.flag),
+                        Text("Country Code: ${location.country}"),
                       ],
                     ),
                   ],
