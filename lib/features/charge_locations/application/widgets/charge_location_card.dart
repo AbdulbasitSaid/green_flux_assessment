@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_flux_assessment/features/charge_locations/data/models/location.dart';
 
 class ChargeLocationListCard extends StatelessWidget {
   const ChargeLocationListCard({
     super.key,
     required this.colorScheme,
+    required this.location,
   });
 
   final ColorScheme colorScheme;
+  final Location location;
 
   @override
   Widget build(BuildContext context) {
@@ -19,33 +22,32 @@ class ChargeLocationListCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Almere",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+            Text(
+              "${location.city}",
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
-            const Row(
+            Row(
               children: [
-                Text("NLD",
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text("${location.country}",
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w500)),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on),
-                Flexible(
-                    child: Text(" 48E louis Amstrongweg, Netherlands 1311RK")),
+                const Icon(Icons.location_on),
+                Flexible(child: Text("${location.address}")),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               children: [
                 Text(
-                  "Total Charge points: 6",
-                  style: TextStyle(fontWeight: FontWeight.w500),
+                  "Total Charge points: ${location.evses.length}",
+                  style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -55,19 +57,25 @@ class ChargeLocationListCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text("Status",
-                        style: TextStyle(fontWeight: FontWeight.w500)),
+                    Text(
+                        "Status: ${location.availability ? "Available" : "Unavailable"}",
+                        style: const TextStyle(fontWeight: FontWeight.w500)),
                     const SizedBox(width: 8),
                     Icon(
                       Icons.radio_button_checked,
-                      color: colorScheme.primary,
+                      color: location.availability
+                          ? colorScheme.primary
+                          : colorScheme.error,
                     )
                   ],
                 ),
                 FilledButton(
-                  onPressed: () {
-                    context.go('/locations/1');
-                  },
+                  onPressed: location.availability
+                      ? () {
+                          context.go('/locations/${location.address}',
+                              extra: location);
+                        }
+                      : null,
                   child: const Text('View Details'),
                 ),
               ],
